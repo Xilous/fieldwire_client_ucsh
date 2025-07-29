@@ -1,0 +1,14 @@
+# Checklist items for FC (Frame Check) tasks
+# These are the standard checklist items that get added to FC tasks
+
+items:
+  - RH Plumb
+  - LH Plumb
+  - RH Plumb and Plane
+  - LH Plumb and Plane
+  - Header
+  - Flooring Complete
+  - Wall Painted
+  - Frame Painted
+  - Rework Required
+  - ADO Backing 

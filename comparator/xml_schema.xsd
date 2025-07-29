@@ -1,0 +1,359 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="FilePath" type="xs:string"/>
+  <xs:element name="FileName" type="xs:string"/>
+  <xs:element name="D8NoOpeningsSchedules" type="xs:byte"/>
+  <xs:element name="D8NoHardwareGroups" type="xs:byte"/>
+  <xs:element name="D10NoWashroomsSchedules" type="xs:byte"/>
+  <xs:element name="D10NoPartitionGroups" type="xs:byte"/>
+  <xs:element name="D10NoAccessoryGroups" type="xs:byte"/>
+  <xs:element name="Address" type="xs:string"/>
+  <xs:element name="Phone" type="xs:string"/>
+  <xs:element name="Fax" type="xs:string"/>
+  <xs:element name="Email" type="xs:string"/>
+  <xs:element name="ANSI" type="xs:string"/>
+  <xs:element name="Location" type="xs:string"/>
+  <xs:element name="JobNo" type="xs:short"/>
+  <xs:element name="StartDate" type="xs:date"/>
+  <xs:element name="SubmitDate" type="xs:date"/>
+  <xs:element name="DefaultFrameCat" type="xs:string"/>
+  <xs:element name="DefaultDoorCat" type="xs:string"/>
+  <xs:element name="D8HardwareLocations" type="xs:string"/>
+  <xs:element name="Detailer" type="xs:string"/>
+  <xs:element name="ProjectMeasurement" type="xs:string"/>
+  <xs:element name="Architect">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:string" name="Name"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Contractor">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:string" name="Name"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Coordinator">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Address"/>
+        <xs:element ref="Phone"/>
+        <xs:element ref="Fax"/>
+        <xs:element ref="Email"/>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="Name"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Designer">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:string" name="Name"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Customer">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:string" name="No"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Bill">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:string" name="ToCustomer"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Ship">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:string" name="ToCustomer"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Type" type="xs:string"/>
+  <xs:element name="Material" type="xs:string"/>
+  <xs:element name="Thickness" type="xs:byte"/>
+  <xs:element name="Quantity" type="xs:byte"/>
+  <xs:element name="NominalWidth" type="xs:string"/>
+  <xs:element name="NominalHeight" type="xs:short"/>
+  <xs:element name="Hand" type="xs:string"/>
+  <xs:element name="Location1" type="xs:string"/>
+  <xs:element name="ToFrom" type="xs:string"/>
+  <xs:element name="Location2" type="xs:string"/>
+  <xs:element name="HardwareGroup" type="xs:byte"/>
+  <xs:element name="HeadingNum" type="xs:byte"/>
+  <xs:element name="H100_HangDoor" type="xs:string"/>
+  <xs:element name="H300_SecureAct" type="xs:string"/>
+  <xs:element name="H600_ProtPlate" type="xs:string"/>
+  <xs:element name="H700_StopHold" type="xs:string"/>
+  <xs:element name="H800_SpecAccess" type="xs:string"/>
+  <xs:element name="H900_Misc2" type="xs:string"/>
+  <xs:element name="Door">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Type" minOccurs="0"/>
+        <xs:element ref="Material"/>
+        <xs:element ref="Thickness" minOccurs="0"/>
+        <xs:element ref="Undercut" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="Catalog" use="optional"/>
+      <xs:attribute type="xs:string" name="Series" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Frame">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Material"/>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="Catalog" use="optional"/>
+      <xs:attribute type="xs:string" name="Series" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="H500_CloseDoor" type="xs:short"/>
+  <xs:element name="Undercut" type="xs:byte"/>
+  <xs:element name="Label" type="xs:string"/>
+  <xs:element name="H200_SecureInact" type="xs:short"/>
+  <xs:element name="H400_PushPull" type="xs:string"/>
+  <xs:element name="Opening">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Quantity"/>
+        <xs:element ref="Type"/>
+        <xs:element ref="NominalWidth"/>
+        <xs:element ref="NominalHeight" minOccurs="0"/>
+        <xs:element ref="Label" minOccurs="0"/>
+        <xs:element ref="Hand"/>
+        <xs:element ref="Location1"/>
+        <xs:element ref="ToFrom"/>
+        <xs:element ref="Location2"/>
+        <xs:element ref="HardwareGroup"/>
+        <xs:element ref="HeadingNum"/>
+        <xs:element ref="H100_HangDoor" minOccurs="0"/>
+        <xs:element ref="H200_SecureInact" minOccurs="0"/>
+        <xs:element ref="H300_SecureAct" minOccurs="0"/>
+        <xs:element ref="H500_CloseDoor" minOccurs="0"/>
+        <xs:element ref="H400_PushPull" minOccurs="0"/>
+        <xs:element ref="H600_ProtPlate" minOccurs="0"/>
+        <xs:element ref="H700_StopHold" minOccurs="0"/>
+        <xs:element ref="H800_SpecAccess" minOccurs="0"/>
+        <xs:element ref="H900_Misc2" minOccurs="0"/>
+        <xs:element ref="Door"/>
+        <xs:element ref="Frame"/>
+      </xs:sequence>
+      <xs:attribute type="xs:byte" name="OS_Num" use="optional"/>
+      <xs:attribute type="xs:byte" name="RowNum" use="optional"/>
+      <xs:attribute type="xs:string" name="Number" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Schedule">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Opening" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="Name"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QuantityActive" type="xs:byte"/>
+  <xs:element name="ShortCode" type="xs:string"/>
+  <xs:element name="ProductCode" type="xs:string"/>
+  <xs:element name="Handing" type="xs:string"/>
+  <xs:element name="Finish_ANSI" type="xs:string"/>
+  <xs:element name="SubCategory" type="xs:string"/>
+  <xs:element name="UnitList" type="xs:float"/>
+  <xs:element name="Discount" type="xs:float"/>
+  <xs:element name="Finish_BHMA" type="xs:short"/>
+  <xs:element name="Category" type="xs:string"/>
+  <xs:element name="DoorPrep" type="xs:string"/>
+  <xs:element name="FramePrep" type="xs:string"/>
+  <xs:element name="UnitCost" type="xs:float"/>
+  <xs:element name="Item">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="QuantityActive" minOccurs="0"/>
+        <xs:element ref="QuantityOffDoor" minOccurs="0"/>
+        <xs:element ref="QuantityInactive" minOccurs="0"/>
+        <xs:element ref="ShortCode" minOccurs="0"/>
+        <xs:element ref="ProductCode" minOccurs="0"/>
+        <xs:element ref="Handing" minOccurs="0"/>
+        <xs:element ref="Finish_ANSI" minOccurs="0"/>
+        <xs:element ref="Finish_BHMA" minOccurs="0"/>
+        <xs:element ref="Category" minOccurs="0"/>
+        <xs:element ref="SubCategory" minOccurs="0"/>
+        <xs:element ref="DoorPrep" minOccurs="0"/>
+        <xs:element ref="FramePrep" minOccurs="0"/>
+        <xs:element ref="UnitList" minOccurs="0"/>
+        <xs:element ref="Discount" minOccurs="0"/>
+        <xs:element ref="UnitCost" minOccurs="0"/>
+        <xs:element ref="ComponentType" minOccurs="0"/>
+        <xs:element ref="Code" minOccurs="0"/>
+        <xs:element ref="QuantityPerOpening" minOccurs="0"/>
+        <xs:element ref="TotalQuantity" minOccurs="0"/>
+        <xs:element ref="Catalog" minOccurs="0"/>
+        <xs:element ref="Manufacturer" minOccurs="0"/>
+        <xs:element ref="OpeningNumbers" minOccurs="0"/>
+        <xs:element ref="NumberOfOpenings" minOccurs="0"/>
+        <xs:element ref="Type" minOccurs="0"/>
+        <xs:element ref="PriceBasis" minOccurs="0"/>
+        <xs:element ref="OpeningList" minOccurs="0"/>
+        <xs:element ref="TotalList" minOccurs="0"/>
+        <xs:element ref="DiscountPct" minOccurs="0"/>
+        <xs:element ref="OpeningCost" minOccurs="0"/>
+        <xs:element ref="TotalCost" minOccurs="0"/>
+        <xs:element ref="OpeningQuote" minOccurs="0"/>
+        <xs:element ref="TotalQuote" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute type="xs:byte" name="HG_Num" use="optional"/>
+      <xs:attribute type="xs:short" name="RowNum" use="optional"/>
+      <xs:attribute type="xs:string" name="ProductLine" use="optional"/>
+      <xs:attribute type="xs:string" name="Manufacturer" use="optional"/>
+      <xs:attribute type="xs:string" name="Catalog" use="optional"/>
+      <xs:attribute type="xs:string" name="Description" use="optional"/>
+      <xs:attribute type="xs:byte" name="OS_Num" use="optional"/>
+      <xs:attribute type="xs:byte" name="OS_RowNum" use="optional"/>
+      <xs:attribute type="xs:byte" name="HG_RowNum" use="optional"/>
+      <xs:attribute type="xs:string" name="ParentRowNum" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QuantityOffDoor" type="xs:byte"/>
+  <xs:element name="QuantityInactive" type="xs:byte"/>
+  <xs:element name="Group">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Item" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute type="xs:byte" name="Name" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ComponentType" type="xs:string"/>
+  <xs:element name="Code" type="xs:string"/>
+  <xs:element name="QuantityPerOpening" type="xs:byte"/>
+  <xs:element name="TotalQuantity" type="xs:byte"/>
+  <xs:element name="Manufacturer" type="xs:string"/>
+  <xs:element name="OpeningNumbers" type="xs:string"/>
+  <xs:element name="NumberOfOpenings" type="xs:byte"/>
+  <xs:element name="PriceBasis" type="xs:string"/>
+  <xs:element name="OpeningList" type="xs:float"/>
+  <xs:element name="TotalList" type="xs:float"/>
+  <xs:element name="DiscountPct" type="xs:float"/>
+  <xs:element name="OpeningCost" type="xs:float"/>
+  <xs:element name="TotalCost" type="xs:float"/>
+  <xs:element name="OpeningQuote" type="xs:float"/>
+  <xs:element name="TotalQuote" type="xs:float"/>
+  <xs:element name="Catalog" type="xs:string"/>
+  <xs:element name="OpeningsSchedules">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Schedule"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="HardwareGroups">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Group" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Accessories" type="xs:string"/>
+  <xs:element name="MaterialList">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element ref="Item" maxOccurs="unbounded" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Washrooms" type="xs:string"/>
+  <xs:element name="ProjectHeader">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="FilePath"/>
+        <xs:element ref="FileName"/>
+        <xs:element ref="D8NoOpeningsSchedules"/>
+        <xs:element ref="D8NoHardwareGroups"/>
+        <xs:element ref="D10NoWashroomsSchedules"/>
+        <xs:element ref="D10NoPartitionGroups"/>
+        <xs:element ref="D10NoAccessoryGroups"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProjectInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ANSI"/>
+        <xs:element ref="Location"/>
+        <xs:element ref="JobNo"/>
+        <xs:element ref="StartDate"/>
+        <xs:element ref="SubmitDate"/>
+        <xs:element ref="DefaultFrameCat"/>
+        <xs:element ref="DefaultDoorCat"/>
+        <xs:element ref="D8HardwareLocations"/>
+        <xs:element ref="Detailer"/>
+        <xs:element ref="ProjectMeasurement"/>
+        <xs:element ref="Architect"/>
+        <xs:element ref="Contractor"/>
+        <xs:element ref="Coordinator"/>
+        <xs:element ref="Designer"/>
+        <xs:element ref="Customer"/>
+        <xs:element ref="Bill"/>
+        <xs:element ref="Ship"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExportInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ProjectMeasurement"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProjectLog" type="xs:string"/>
+  <xs:element name="Division8">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="OpeningsSchedules"/>
+        <xs:element ref="HardwareGroups"/>
+        <xs:element ref="Accessories"/>
+        <xs:element ref="MaterialList"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Division10">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Washrooms"/>
+        <xs:element ref="MaterialList"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Project">
+    <xs:annotation>
+      <xs:documentation> AVAproject Generic XML Export Rev. 18.12.12 </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ProjectHeader"/>
+        <xs:element ref="ProjectInfo"/>
+        <xs:element ref="ExportInfo"/>
+        <xs:element ref="ProjectLog"/>
+        <xs:element ref="Division8"/>
+        <xs:element ref="Division10"/>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="Name"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

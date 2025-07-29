@@ -1,0 +1,9 @@
+requests>=2.31.0
+tqdm>=4.66.1
+PyMuPDF>=1.23.7  # PDF processing
+Pillow>=10.1.0   # Image manipulation 
+pandas>=2.0.0    # Excel and data processing
+openpyxl>=3.1.0  # Excel file support 
+PyYAML>=6.0      # YAML configuration file support
+
+pip install requests tqdm PyMuPDF Pillow pandas openpyxl keyboard psutil pywin32 PyYAML

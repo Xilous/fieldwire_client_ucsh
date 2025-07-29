@@ -1,0 +1,81 @@
+# -*- mode: python ; coding: utf-8 -*-
+
+block_cipher = None
+
+# Add all data files needed by your application
+datas = []
+
+a = Analysis(
+    ['main.py'],
+    pathex=[],
+    binaries=[],
+    datas=datas,
+    hiddenimports=[
+        'cli.cli', 
+        'core.auth', 
+        'services.project',
+        'services.user',
+        'services.task',
+        'services.sheet',
+        'services.hardware',
+        'services.attribute',
+        'services.status',
+        'services.tags',
+        'services.report_service',
+        'utils.input_helpers',
+        'utils.validators',
+        'utils.decorators',
+        'utils.rate_limiter',
+        'processors.xml_processor',
+        'processors.hardware_processor',
+        'config.settings',
+        'config.constants',
+        'pandas',
+        'openpyxl',
+        'jinja2',
+        'sip',
+        'PIL',
+        'PIL.Image',
+        'numpy',
+        'win32com',
+        'pythoncom',
+        'PyQt5',
+        'PyQt5.QtWidgets',
+        'PyQt5.QtCore',
+        'PyQt5.QtGui',
+        '_tkinter',
+    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
+)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='fieldwire_client',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=True,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    icon=None,
+) 
