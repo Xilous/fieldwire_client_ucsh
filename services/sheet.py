@@ -33,6 +33,9 @@ DISTANCE_STEP = 10  # Amount to adjust distance by
 _preview_window_lock = threading.Lock()
 _active_preview_window = None
 
+# Global state to persist marker visibility between preview windows
+_markers_visible_state = True
+
 # Global keyboard management to prevent multiple listeners
 _global_keyboard_thread = None
 _global_keyboard_stop = threading.Event()
@@ -90,9 +93,13 @@ class PreviewWindow:
         self.image_url = image_url  # Store image URL for later loading
         self.task_name = task_name  # Store task name for display
         self.enable_distance_controls = enable_distance_controls  # For BC mode compatibility
+        global _markers_visible_state
+        self.markers_visible = _markers_visible_state  # Use persistent global state
+        self.marker_objects = []  # Store marker canvas objects for toggling
         
         # Debug output for distance controls setting
         print(f"Preview window initialized with enable_distance_controls={enable_distance_controls}")
+        print(f"Markers will be {'visible' if self.markers_visible else 'hidden'} (persistent from previous window)")
         
         # Simplified keyboard shortcut support - no threading locks needed
         
@@ -159,8 +166,9 @@ class PreviewWindow:
         
         print("\nKeyboard shortcuts active:")
         print("  y = Accept location")
-        print("  n = Next match") 
-        print("  s = Skip task")
+        print("  n = Next match (cycles within same opening number)") 
+        print("  s = Skip task (moves to next opening number)")
+        print("  t = Toggle markers visibility")
         if self.enable_distance_controls:
             print("  z = Increase spacing")
             print("  x = Decrease spacing")
@@ -176,6 +184,8 @@ class PreviewWindow:
         self.root.bind('<Key-N>', self._on_key_n)
         self.root.bind('<Key-s>', self._on_key_s)
         self.root.bind('<Key-S>', self._on_key_s)
+        self.root.bind('<Key-t>', self._on_key_t)
+        self.root.bind('<Key-T>', self._on_key_t)
         
         # Arrow keys
         self.root.bind('<Key-Up>', self._on_key_up)
@@ -207,6 +217,10 @@ class PreviewWindow:
     def _on_key_s(self, event=None):
         print("S key pressed")
         self._safe_handle_choice('s')
+    
+    def _on_key_t(self, event=None):
+        print("T key pressed - toggling markers")
+        self._toggle_markers()
     
     def _on_key_up(self, event=None):
         print("UP key pressed")
@@ -382,6 +396,7 @@ class PreviewWindow:
                 self.canvas.yview_moveto(y_scroll)
             
             # Draw task locations with scaled coordinates
+            self.marker_objects = []  # Clear previous markers
             for location in self.locations:
                 # Scale coordinates based on the image resize ratio
                 x = location['pos_x'] * self.scale_factor
@@ -391,13 +406,17 @@ class PreviewWindow:
                 color = 'red' if location['is_main'] else 'blue'
                 marker_size = 5 * self.scale_factor  # Scale the marker size
                 
-                # Draw the marker
-                self.canvas.create_oval(
+                # Draw the marker as hollow circle and store reference
+                # Set initial state based on persistent visibility setting
+                initial_state = 'normal' if self.markers_visible else 'hidden'
+                marker = self.canvas.create_oval(
                     x-marker_size, y-marker_size, x+marker_size, y+marker_size,
-                    fill=color,
-                    outline='white',
-                    width=2
+                    fill='',
+                    outline=color,
+                    width=2,
+                    state=initial_state
                 )
+                self.marker_objects.append(marker)
                 
         except Exception as e:
             print(f"Error loading image: {str(e)}")
@@ -471,7 +490,7 @@ class PreviewWindow:
         # Skip button
         self.skip_btn = ttk.Button(
             self.button_frame,
-            text="Skip (s)",
+            text="Skip Task (s)",
             command=lambda: self._handle_choice('s')
         )
         self.skip_btn.pack(side=tk.LEFT, padx=5)
@@ -483,6 +502,14 @@ class PreviewWindow:
             command=lambda: self._handle_choice('n')
         )
         self.next_btn.pack(side=tk.LEFT, padx=5)
+        
+        # Toggle markers button
+        self.toggle_btn = ttk.Button(
+            self.button_frame,
+            text="Toggle Markers (t)",
+            command=self._toggle_markers
+        )
+        self.toggle_btn.pack(side=tk.LEFT, padx=5)
         
         # Configure style for accept button
         style = ttk.Style()
@@ -601,6 +628,26 @@ class PreviewWindow:
         except tk.TclError:
             # Window was destroyed, nothing to do
             pass
+
+    def _toggle_markers(self):
+        """Toggle visibility of task location markers."""
+        if not hasattr(self, 'canvas') or not self.canvas:
+            return
+            
+        global _markers_visible_state
+        self.markers_visible = not self.markers_visible
+        _markers_visible_state = self.markers_visible  # Save state globally
+        
+        if self.markers_visible:
+            print("Showing markers")
+            # Show all markers
+            for marker in self.marker_objects:
+                self.canvas.itemconfig(marker, state='normal')
+        else:
+            print("Hiding markers")
+            # Hide all markers
+            for marker in self.marker_objects:
+                self.canvas.itemconfig(marker, state='hidden')
 
     def _force_cleanup(self):
         """Force cleanup of this window instance."""
@@ -1074,6 +1121,8 @@ class SheetService(AuthManager):
             print("  • GUI buttons and keyboard shortcuts are both available")  
             print("  • Keyboard shortcuts: Click preview window first, then press keys")
             print("  • ON mode: Multiple related tasks with spacing controls")
+            print("  • Next Match (n): Cycles through all matches for current opening number")
+            print("  • Skip (s): Skips entire opening number and moves to next task")
             print("="*60)
             
             task_items = list(tasks_to_process.items())
@@ -1577,31 +1626,13 @@ class SheetService(AuthManager):
                     
                 location_found = False
                 rejected_count = 0  # Counter for rejected matches for sequential filenames
+                current_match_index = 0  # Track current match index for cycling
+                skip_task = False  # Flag to skip to next task
                 
-                for location in locations:
-                    if location_found:
-                        # Save rejected image without showing to user, since we already found a match
-                        try:
-                            rejected_count += 1
-                            self._save_preview_image(
-                                sheet_path=location.sheet_path,
-                                center_x=location.center_x,
-                                center_y=location.center_y,
-                                number=number,
-                                save_dir=save_dir,
-                                task_positions=[{
-                                    'pos_x': location.center_x,
-                                    'pos_y': location.center_y,
-                                    'task_type': 'UCI',
-                                    'is_main': True
-                                }],
-                                filename_prefix=f"no_{number}_{rejected_count}"
-                            )
-                            print(f"Saved rejected match image: no_{number}_{rejected_count}.jpg")
-                        except Exception as e:
-                            print(f"Error saving rejected match image: {str(e)}")
-                        continue
-                        
+                # Cycle through matches until user accepts one or skips the task
+                while not location_found and not skip_task:
+                    location = locations[current_match_index]
+                    
                     # Modified to use new async update method
                     result = self._process_task_location_with_async_update(
                         project_id,
@@ -1619,7 +1650,7 @@ class SheetService(AuthManager):
                         save_dir,  # Pass save directory to the processing function
                         rejected_count,  # Pass the current rejected count
                         update_queue,  # Pass the update queue for async updates
-                        match_number=locations.index(location) + 1,  # Pass current match number
+                        match_number=current_match_index + 1,  # Pass current match number
                         total_matches=len(locations)  # Pass total matches
                     )
                     
@@ -1627,8 +1658,43 @@ class SheetService(AuthManager):
                         location_found, current_distance, was_rejected = result
                         if was_rejected:
                             rejected_count += 1
-                    elif result:
+                            # Move to next match (cycle back to first if at end)
+                            current_match_index = (current_match_index + 1) % len(locations)
+                            print(f"Moving to match {current_match_index + 1} of {len(locations)} for opening number {number}")
+                    elif result == True:
                         location_found = result
+                    elif result == "skip_task":
+                        # User pressed 's' to skip the entire task
+                        skip_task = True
+                        print(f"User skipped opening number {number} - moving to next task")
+                    elif result == False:
+                        # This shouldn't happen with the new logic, but handle it just in case
+                        print(f"Unexpected result: {result}. Skipping task.")
+                        skip_task = True
+                
+                # Save any remaining matches as rejected images (only if user accepted one match)
+                if location_found:
+                    for i, location in enumerate(locations):
+                        if i != current_match_index:  # Skip the accepted match
+                            try:
+                                rejected_count += 1
+                                self._save_preview_image(
+                                    sheet_path=location.sheet_path,
+                                    center_x=location.center_x,
+                                    center_y=location.center_y,
+                                    number=number,
+                                    save_dir=save_dir,
+                                    task_positions=[{
+                                        'pos_x': location.center_x,
+                                        'pos_y': location.center_y,
+                                        'task_type': 'UCI',
+                                        'is_main': True
+                                    }],
+                                    filename_prefix=f"no_{number}_{rejected_count}"
+                                )
+                                print(f"Saved rejected match image: no_{number}_{rejected_count}.jpg")
+                            except Exception as e:
+                                print(f"Error saving rejected match image: {str(e)}")
                         
                 if location_found:
                     print(f"Successfully processed opening number {number} (Update in progress)")
@@ -1858,7 +1924,7 @@ class SheetService(AuthManager):
                     print("Canceling sequence.")
                     return False
             elif choice == 's':
-                # Skip this match and consider it rejected
+                # Skip the entire task (opening number) and move to next task
                 if save_dir:
                     try:
                         # Save preview image with no_ prefix and sequence number
@@ -1875,7 +1941,7 @@ class SheetService(AuthManager):
                         print(f"Preview image saved for rejected match: no_{number}_{rejected_count}.jpg")
                     except Exception as e:
                         print(f"Error saving rejected match image: {str(e)}")
-                return False
+                return "skip_task"  # Special return value to indicate skipping entire task
             elif choice == 'n':
                 # Go to next match and consider it rejected
                 if save_dir:
